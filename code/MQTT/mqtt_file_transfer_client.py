@@ -26,7 +26,26 @@ def on_subscribe(client, userdata, mid, granted_qos):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    fo_stats.write(str(time.time())+",\n")
+    payload_length = len(msg.payload)
+
+    # Fixed Header
+    header_size = 1 # Control Byte
+    
+    if payload_length < 2 ** 7:
+        header_size += 1 # Packet Length < 128: 1 byte
+    elif payload_length < 2 ** 14:
+        header_size += 2 # Packet Length >= 128 < 16383: 2 bytes
+    elif payload_length < 2 ** 21:
+        header_size += 3 # Packet Length >= 16384 < 2097151: 3 bytes
+    else:
+        header_size += 4 # Packet Length >= 2097151 < 268435455: 4 bytes
+
+    # Variable Header
+    header_size += 2 # Fixed topic length field
+    header_size += len(args.topic) # Topic
+    header_size += 2 # Message id field
+
+    fo_stats.write(str(time.time()) + "," + str(payload_length + header_size) + "\n")
     fout=open(args.file,"wb")
     fout.write(msg.payload)
     fout.close()
