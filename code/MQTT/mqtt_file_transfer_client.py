@@ -6,7 +6,8 @@ import math
 import time
 from queue import Queue
 
-
+DEST_FILE_PATH = 'ReceivedFiles/'
+REPORT_FILE_PATH = 'Report/'
 
 class Client:
 
@@ -17,6 +18,12 @@ class Client:
         self.topic = topic
         self.qos = qos
         self.count = count
+        self.type = type
+        self.client = None
+
+    def __init__(self, bkr_addr, bkr_port, type):
+        self.bkr_addr = bkr_addr
+        self.bkr_port = bkr_port
         self.type = type
         self.client = None
 
@@ -32,7 +39,6 @@ class Client:
         self.client.is_connected_flag = False
         self.client.is_subscribed_flag = False
         self.client.publish_is_complete_flag = False
-        self.client.num_times_to_loop = self.count
         self.message_queue = Queue()
 
         try:
@@ -77,7 +83,7 @@ class Client:
 
         fo_stats.write(str(time.time()) + "," + str(payload_length + header_size) + "\n")
 
-        # Write the file later to allow the function to return 
+        # Write the file later to allow the function to return
         self.message_queue.put(msg.payload)
         client.num_times_to_loop -= 1
         print("Received File Copy (%d of %d)" %(self.count - client.num_times_to_loop, self.count))
@@ -94,10 +100,16 @@ class Client:
         self.client.disconnect()
         self.client.loop_stop()
 
-    def publish(self):
-        # self.client = self.connect()
+    def publish(self, file, topic, qos, count):
+        self.file = file
+        self.topic = topic
+        self.qos = qos
+        self.count = count
+        self.client.num_times_to_loop = count
         global fo_stats
-        fo_stats = open(self.file + "_" + "publish" + "_qos_" + str(1) + "_stats.csv","w")
+        filename = REPORT_FILE_PATH + self.file.split("/")[-1] + "_" + "publish" + "_qos_" + str(1) + "_stats.csv"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        fo_stats = open(filename, "w")
         try:
             with open(self.file,"rb") as f:
                 file_size = os.path.getsize(self.file)
@@ -113,12 +125,18 @@ class Client:
         except FileNotFoundError:
             print("Cannot open file: " + self.file)
             sys.exit()
-        self.disconnect()
 
-    def subscribe(self):
+    def subscribe(self, file, topic, qos, count):
         # self.client = self.connect(self.bkr_addr, self.bkr_port, self.count, "subscriber")
+        self.file = file
+        self.topic = topic
+        self.qos = qos
+        self.count = count
+        self.client.num_times_to_loop = count
         global fo_stats
-        fo_stats = open(self.file + "_" + "subscriber" + "_qos_" + str(1) + "_stats.csv","w")
+        filename = REPORT_FILE_PATH + self.file.split("/")[-1] + "_" + "subscriber" + "_qos_" + str(1) + "_stats.csv"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        fo_stats = open(filename,"w")
 
         # Subscribing to topic and waiting for SUBACK
         print("Subscribing to topic: " + self.topic + ", QOS:" + str(self.qos))
@@ -135,18 +153,16 @@ class Client:
                 fout.close()
             continue
 
-        self.disconnect()
-
 
 if __name__ == "__main__":
 
     if True:
     # use this code block for publish
-     client = Client('localhost', 1883, '10MB', 'topic1', 1, 10, 'publisher')
+     client = Client('192.168.1.9', 1883, '10MB', 'topic1', 1, 10, 'publisher')
      client.connect()
      client.publish()
-    else: 
+    else:
     # Use this code block for client
-     client = Client('localhost', 1883, 'op', 'topic1', 1, 10, 'subscriber')
+     client = Client('192.168.1.9', 1883, 'op', 'topic1', 1, 10, 'subscriber')
      client.connect()
      client.subscribe()
