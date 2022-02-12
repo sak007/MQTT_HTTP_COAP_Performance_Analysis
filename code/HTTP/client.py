@@ -31,17 +31,17 @@ def client(url):
     runtime = time.time() - runtime
     hBytes, bBytes = bytesInResponse(resp)
 
-
     return runtime, hBytes, bBytes
 
 
 def main():
-    host = '127.0.0.1'
+    #host = '127.0.0.1' # Local
+    host = '192.168.0.110'
     port = 8000
 
-    file = "100B"
+    file = "10MB"
     url = "http://" + host + ":" + str(port) + "/" + file
-    nTimes = 10001
+    nTimes = 11
 
     resultsFile = "results/results_" + file + ".csv" 
     print("asdf")
@@ -58,7 +58,9 @@ def main():
             print(i,  "{:.4f}".format(runtime))
             line = str(runtime) + "," + str(hBytes) + "," + str(bBytes) + ",\n"
             out.write(line)
+            #time.sleep(.1)
             
 
 if __name__ == "__main__":
+    #client("http://192.168.0.110:8000/100B")
     main()

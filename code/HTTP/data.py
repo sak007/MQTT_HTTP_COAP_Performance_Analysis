@@ -37,6 +37,7 @@ def stats(data):
     sd = np.std(data)
     return avg, sd
 
+
 def main():
     folder = "results/"
     file = "results_100B.csv"
@@ -51,10 +52,21 @@ def main():
     print("header avg: ", hAvg, " sd ", hSd)
     bAvg, bSd = stats(bBytes)
     print("body avg: ", bAvg, " sd ", bSd)
-    tAvg, tSd = stats(bBytes)
+    tAvg, tSd = stats(transfer)
     print("transfer avg: ", tAvg, " sd ", tSd)
     oAvg, oSd = stats(overheadRate)
     print("overhead avg: ", oAvg, " sd ", oSd)
+
+    dRate = [] # Data transfer rate
+    dhRate = [] # Data + header transfer rate
+    for i in range(len(runtimes)):
+        dRate.append((bBytes[i] / 1000)/runtimes[i])
+        dhRate.append(((bBytes[i] + hBytes[i]) / 1000) / runtimes[i])
+    dAvg, dSd = stats(dRate)
+    dhAvg, dhSd = stats(dhRate)
+    print("Rate (kilobytes / s): mean, sd")
+    print("Data only: ", dAvg, dSd)
+    print("Data + Header: ", dhAvg, dhSd)
 
     plt.figure()
     plt.title(fileSize + " Runtime")
