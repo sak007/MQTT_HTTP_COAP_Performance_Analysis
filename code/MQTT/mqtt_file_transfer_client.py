@@ -107,7 +107,7 @@ class Client:
         self.count = count
         self.client.num_times_to_loop = count
         global fo_stats
-        filename = REPORT_FILE_PATH + self.file.split("/")[-1] + "_" + "publish" + "_qos_" + str(1) + "_stats.csv"
+        filename = REPORT_FILE_PATH + self.file.split("/")[-1] + "_" + "publish" + "_qos_" + str(qos) + "_stats.csv"
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         fo_stats = open(filename, "w")
         try:
@@ -134,7 +134,7 @@ class Client:
         self.count = count
         self.client.num_times_to_loop = count
         global fo_stats
-        filename = REPORT_FILE_PATH + self.file.split("/")[-1] + "_" + "subscriber" + "_qos_" + str(1) + "_stats.csv"
+        filename = REPORT_FILE_PATH + self.file.split("/")[-1] + "_" + "subscriber" + "_qos_" + str(qos) + "_stats.csv"
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         fo_stats = open(filename,"w")
 

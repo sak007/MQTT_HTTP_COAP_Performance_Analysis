@@ -2,10 +2,12 @@ from mqtt_file_transfer_client import Client
 import argparse
 import os
 import json
+import time
 
 SRC_FILE_PATH = '../../DataFiles/'
 DEST_FILE_PATH = 'ReceivedFiles/'
 SOURCE_FILES = {'100B': 10000, '10KB': 1000, '1MB': 100, '10MB': 10}
+TOPICS = {'100B': 'data/files/100B', '10KB': 'data/files/10KB', '1MB': 'data/files/01MB', '10MB': 'data/files/10MB'}
 
 def mqtt_sub(qos):
     client = Client(BROKER_ADDR, BROKER_PORT, 'subscriber')
@@ -13,15 +15,16 @@ def mqtt_sub(qos):
     os.makedirs(os.path.dirname('ReceivedFiles/'), exist_ok=True)
     for f in SOURCE_FILES.keys():
         print ("Waiting for " + f)
-        client.subscribe(DEST_FILE_PATH + f, 'topic1', qos, SOURCE_FILES[f])
+        client.subscribe(DEST_FILE_PATH + f, TOPICS[f], qos, SOURCE_FILES[f])
     client.disconnect()
 
 def mqtt_pub(qos):
     client = Client(BROKER_ADDR, BROKER_PORT, 'publisher')
     client.connect()
     for f in SOURCE_FILES.keys():
-        print ("Sending " + f)
-        client.publish(SRC_FILE_PATH + f, 'topic1', qos, SOURCE_FILES[f])
+        print ("Sending " + f + ". Starting in 30 seconds.")
+        time.sleep(30)
+        client.publish(SRC_FILE_PATH + f, TOPICS[f], qos, SOURCE_FILES[f])
     client.disconnect()
 
 def init():
