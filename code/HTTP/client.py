@@ -24,13 +24,16 @@ def bytesInResponse(response):
     return hBytes, bBytes
 
 
+
+
 def client(url):
     runtime = time.time()
     #resp = requests.get("http://127.0.0.1:8000/100B")
     resp = requests.get(url)
     runtime = time.time() - runtime
     hBytes, bBytes = bytesInResponse(resp)
-
+    print(hBytes, bBytes)
+    print(runtime)
     return runtime, hBytes, bBytes
 
 
@@ -41,24 +44,19 @@ def main():
 
     file = "10MB"
     url = "http://" + host + ":" + str(port) + "/" + file
-    nTimes = 11
+    nTimes = 10
 
-    resultsFile = "results/results_" + file + ".csv" 
-    print("asdf")
+    resultsFile = "results/results2_" + file + ".csv" 
     with open(resultsFile, "w") as out:
         out.write("runtime,header bytes, body bytes\n")
         for i in range(nTimes):
             runtime, hBytes, bBytes = client(url)
-            # Metrics
-            # runtime / file size
-            # file size / total data transfered
 
             if i == 0: # Dont save the first download
                 continue
             print(i,  "{:.4f}".format(runtime))
             line = str(runtime) + "," + str(hBytes) + "," + str(bBytes) + ",\n"
             out.write(line)
-            #time.sleep(.1)
             
 
 if __name__ == "__main__":

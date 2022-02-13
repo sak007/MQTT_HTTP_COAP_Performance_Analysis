@@ -1,6 +1,6 @@
 # Misc
 .DS_Store
-
+/code/HTTP/captures/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
