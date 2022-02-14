@@ -1,6 +1,10 @@
 {
   "MQTT": {
-    "BROKER_ADDR": "localhost",
+    "BROKER_ADDR": "192.168.7.193",
     "BROKER_PORT": 1883
+  },
+  "COAP": {
+    "SERVER_ADDR": "localhost",
+    "SERVER_PORT": 5683
   }
 }
