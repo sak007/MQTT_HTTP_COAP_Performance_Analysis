@@ -4,6 +4,7 @@ import os
 import sys
 import math
 import time
+import ntplib #pip3 install ntplib
 from queue import Queue
 
 DEST_FILE_PATH = 'ReceivedFiles/'
@@ -20,14 +21,40 @@ class Client:
         self.count = count
         self.type = type
         self.client = None
+        self.time_offset = 0
 
     def __init__(self, bkr_addr, bkr_port, type):
         self.bkr_addr = bkr_addr
         self.bkr_port = bkr_port
         self.type = type
         self.client = None
+        self.time_offset = 0
+
+    # Referenced code from Google example found at: 
+    # https://www.programcreek.com/python/example/91316/ntplib.NTPClient
+    def SyncClockToNtp(self, retries, server):
+        """Syncs the hardware clock to an NTP server."""
+        attempts = 0
+        ntp_client = ntplib.NTPClient()
+        response = None
+
+        while True:
+            try:
+                response = ntp_client.request(server, version=3)
+            except:
+                print('NTP client request error')
+            if response or attempts >= retries:
+                break
+            time.sleep(3)
+            attempts += 1
+
+        self.time_offset = response.offset
+        print(self.time_offset)
 
     def connect(self):
+        # Sync system clock to NTP server
+        ntp_response = self.SyncClockToNtp(2, "time.google.com")
+
         # Define MQTT Client and connect to Broker
         self.client = mqtt.Client(client_id="MQTT_FT_"+self.type+"_"+str(time.time()), clean_session=False)
         self.client.on_connect = self.on_connect
@@ -81,7 +108,7 @@ class Client:
         header_size += len(self.topic) # Topic
         header_size += 2 # Message id field
 
-        fo_stats.write(str(time.time()) + "," + str(payload_length + header_size) + "\n")
+        fo_stats.write(str(time.time()+self.time_offset) + "," + str(payload_length + header_size) + "\n")
 
         # Write the file later to allow the function to return
         self.message_queue.put(msg.payload)
@@ -89,7 +116,7 @@ class Client:
         print("Received File Copy (%d of %d)" %(self.count - client.num_times_to_loop, self.count))
 
     def publish_data(self, payload):
-        fo_stats.write(str(time.time())+",\n")
+        fo_stats.write(str(time.time()+self.time_offset)+",\n")
         self.client.publish_is_complete_flag = False
         self.client.publish(self.topic, payload, self.qos)
 
