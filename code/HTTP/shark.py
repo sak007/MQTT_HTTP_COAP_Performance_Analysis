@@ -52,10 +52,11 @@ def processCapture(capture, folder, file):
 
 def main():
     # Wireshark capture file
-    capture = "captures/10MB.pcapng"
+    capture = "100test.pcapng"
+    #capture = "captures/10MB.pcapng"
     # Corresponding transferred file
     folder = "DataFiles/"
-    file = "10MB"  
+    file = "100B"  
     processCapture(capture, folder, file)
 
 main()

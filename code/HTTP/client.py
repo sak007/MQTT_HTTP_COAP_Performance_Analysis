@@ -7,7 +7,8 @@ def bytesInHeader(header):
     #print("Header")
     #print(header)
     for key in header:
-        total += len(header[key])
+        print(key, header[key])
+        total += len(header[key]) + len(key)
     return total
 
 def bytesInBody(body):
@@ -51,6 +52,7 @@ def main():
         out.write("runtime,header bytes, body bytes\n")
         for i in range(nTimes):
             runtime, hBytes, bBytes = client(url)
+            time.sleep(.01)
 
             if i == 0: # Dont save the first download
                 continue
