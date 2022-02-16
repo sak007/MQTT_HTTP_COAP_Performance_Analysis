@@ -132,3 +132,6 @@ dmypy.json
 .pyre/
 code/MQTT/ReceivedFiles
 code/MQTT/Report
+
+# don't remove this
+.DS_Store
