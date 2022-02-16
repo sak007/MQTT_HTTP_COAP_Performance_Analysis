@@ -1,5 +1,6 @@
 import datetime
 import os
+import json
 import asyncio
 import aiocoap.resource as resource
 import aiocoap
@@ -29,17 +30,23 @@ class FileResource(resource.Resource):
                     print ("Sending file requested: " + file_name)
                     return aiocoap.Message(payload=self.files[file_name])
                 else:
-                     print ("File requested not found: " + file_name)
-                     return aiocoap.Message(payload=bytes("ERROR: File requested not found: " + file_name, "utf-8"))
+                    print ("File requested not found: " + file_name)
+                    return aiocoap.Message(payload=bytes("ERROR: File requested not found: " + file_name, "utf-8"))
 
         return aiocoap.Message(payload=b"ERROR: Bad Request")
 
 async def main():
+    f = open('../../properties.json')
+    properties = json.load(f)
+    server_address = properties['COAP']['SERVER_ADDR']
+    server_port = properties['COAP']['SERVER_PORT']
+    f.close()
+
     # Resource tree creation
     root = resource.Site()
     root.add_resource(['file'], FileResource())
 
-    await aiocoap.Context.create_server_context(bind=('localhost',5683),site=root)
+    await aiocoap.Context.create_server_context(bind=(server_address,server_port),site=root)
 
     # Run forever
     await asyncio.get_running_loop().create_future()
