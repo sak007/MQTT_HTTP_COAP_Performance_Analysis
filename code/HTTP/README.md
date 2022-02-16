@@ -1,13 +1,26 @@
-Python comes with a built in http server that we can use to host the files.
-The server can be launched via "server.sh" which will start the http server in the folder containing the data files at a specific port. These parameters are specified in the "server.sh" scrupt.
+# HTTP Server
+-Python comes with a built in http server that we can use to host the files.
 
-Allow exe permissions:
+Assuming you have clone this repo and are in the HTTP folder, you can start the server via:
+
+#Allow exe permissions:
 chmod +x server.sh
-
-Run the server:
+#Run the server:
 ./server.sh
 
-If you are running this on your local computer, you can visit http://127.0.0.1:8000/ (8000 is the default port #) to see the list of files available for download.
+This wil launch the server in the HTTP/DataFiles directory on port 8000, making the files in HTTP/DataFiles available.
+
+# HTTP Client
+-The http client code is written in HTTP/client.py. This assumes you have installed the requests library.
+
+There are 3 variables that must be set in the main function:
+1) host = ip address of ther server - ex: '192.168.0.110'
+2) file = name of the file you want to request - ex: '100B'
+3) nTimes = the number of times to perform the requeset - ex 10000 for '100B'
+
+# Wireshark
+-We use wireshark to capture
+
 
 Set the file and nTimes variables in client.py and run to run the client
 
