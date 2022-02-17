@@ -2,6 +2,10 @@
 .DS_Store
 /code/HTTP/captures/
 /code/CoAP/captures/
+/code/CoAP/ReceivedFiles
+/code/CoAp/Report
+
+>>>>>>> 88ddc283b0c23e4956c41a2782c9da4934ff1d2e
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

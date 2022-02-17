@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import aiocoap
 
 def extractSizeFromName(filename):
     file = filename[8:-4]

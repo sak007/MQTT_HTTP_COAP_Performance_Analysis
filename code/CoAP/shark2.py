@@ -1,5 +1,6 @@
 import pyshark
 import os 
+import aiocoap
 
 SERVER = "192.168.0.110"
 CLIENT = "192.168.0.229"
@@ -19,37 +20,41 @@ def processCapture(capture, file):
     contents = [] # Data w/o headers sent in bytes
     times = [] # runtime from first HTTP message to last
     i = 0
-    lastblock = 0
     length = 0
-    content = 0
+
     for packet in cap: # for each packet
-        pass
-        # if packet.highest_layer == "DATA":
-        #     continue
-        # continue
-        if state == 0 and packet.highest_layer == "COAP": # Found first CoAP packet
+        # First Coap Packet
+        if state == 0 and packet.highest_layer == "COAP":
             state = 1
-            times.append(float(packet.sniff_timestamp))
-        # elif state == 0 and packet.highest_layer == "DATA": # Missed a CoAP request packet
-        #     print("pass ", i)
-        #     continue
+            times.append(float(packet.sniff_timestamp)) # start time
+        # Handle CoAP Blocks
         elif state == 1 and packet.highest_layer == "COAP":
-            if int(packet.coap.code) == 1: # Request 
+            if int(packet.coap.code) == 1: # CoAP Request 
                 pass
-            else: # Block
-                #content += packet.coap.block_length
-                length += int(packet.length)
-        elif state == 1 and packet.highest_layer == "DATA": # Found last CoAP packet
-                state = 0
-                times[i] = float(packet.sniff_timestamp) - times[i]
-                #lengths.append(int(packet.length))
-                length += int(packet.length)
+            else: # CoAP Block Message
+                # CoAP payload + header = # bytes in UDP payload
+                l = len(packet.udp.payload.split(":"))
+                length += l
+                #c = len(packet.coap.block_payload.split(":"))
+                #print(l, c, l - c)
+                #print(length)
+        # Last CoAP Packet
+        elif state == 1 and packet.highest_layer == "DATA": 
+                times[i] = float(packet.sniff_timestamp) - times[i] # end time
+                # CoAP payload + header = # bytes in UDP payload
+                l = len(packet.udp.payload.split(":"))
+                length += len(packet.udp.payload.split(":"))
+                #c = len(packet.coap.block_payload.split(":"))
+                #print(l, c, l - c)
                 lengths.append(length)
                 contents.append(int(packet.data.len))
+
                 print(i)
                 i+=1
                 length = 0
+                state = 0
                 
+    
     # Save results 
     print("Message #, total bytes sent, runtime,\n")
     resultsFile = "wireshark_results/results_" + file + ".csv" 
@@ -64,10 +69,10 @@ def processCapture(capture, file):
 def main():
     # Wireshark capture file
     #capture = "100test.pcapng"
-    capture = "captures/10KB.pcapng"
+    capture = "captures/10MB.pcapng"
     # Corresponding transferred file
     folder = "DataFiles/"
-    file = "10KB"  
+    file = "10MB"  
     processCapture(capture, file)
 
 main()
