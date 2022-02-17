@@ -28,7 +28,7 @@ def stats(data):
 
 def main():
     folder = "wireshark_results/"
-    file = "results_10MB.csv" ##### File to proces ######
+    file = "results_10KB.csv" ##### File to proces ######
     fileSize = extractSizeFromName(file)
     print(fileSize)
     tBytes, bBytes, hBytes, runtimes = extractResults(folder + file)

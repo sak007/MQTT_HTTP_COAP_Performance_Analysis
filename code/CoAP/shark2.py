@@ -7,10 +7,6 @@ CLIENT = "192.168.0.229"
 def getSourceIP(packet):
     return packet.ip.addr
 
-# HTTP Protocal first/last messages 
-def isHTTP(packet):
-    return packet.protocol == "HTTP"
-
 # Go thru packets sent during http to find out runtimes, num packets and files
 # sent by the server. Multiple HTTP requests can be handled
 # Sometimes there are more packets if duplicates came in 
@@ -23,25 +19,36 @@ def processCapture(capture, file):
     contents = [] # Data w/o headers sent in bytes
     times = [] # runtime from first HTTP message to last
     i = 0
+    lastblock = 0
+    length = 0
+    content = 0
     for packet in cap: # for each packet
-        if state == 0 and packet.highest_layer == "HTTP": # Found first HTTP packet
+        pass
+        # if packet.highest_layer == "DATA":
+        #     continue
+        # continue
+        if state == 0 and packet.highest_layer == "COAP": # Found first CoAP packet
             state = 1
             times.append(float(packet.sniff_timestamp))
-        elif state == 0 and packet.highest_layer == "DATA": # Missed an HTTP requst packet
-            print("pass ", i)
-            continue
-        elif state == 1 and packet.highest_layer == "DATA": # Found last HTTP packet
+        # elif state == 0 and packet.highest_layer == "DATA": # Missed a CoAP request packet
+        #     print("pass ", i)
+        #     continue
+        elif state == 1 and packet.highest_layer == "COAP":
+            if int(packet.coap.code) == 1: # Request 
+                pass
+            else: # Block
+                #content += packet.coap.block_length
+                length += int(packet.length)
+        elif state == 1 and packet.highest_layer == "DATA": # Found last CoAP packet
                 state = 0
                 times[i] = float(packet.sniff_timestamp) - times[i]
-                lengths.append(int(packet.data.tcp_reassembled_length))
-                contents.append(int(packet.http.content_length_header))
+                #lengths.append(int(packet.length))
+                length += int(packet.length)
+                lengths.append(length)
+                contents.append(int(packet.data.len))
                 print(i)
                 i+=1
-        elif state ==1 and packet.highest_layer == "HTTP": # Missed HTTP response packet
-            print("pop ", i)
-            times.pop()
-            state = 1
-            times.append(float(packet.sniff_timestamp))
+                length = 0
                 
     # Save results 
     print("Message #, total bytes sent, runtime,\n")
@@ -57,10 +64,10 @@ def processCapture(capture, file):
 def main():
     # Wireshark capture file
     #capture = "100test.pcapng"
-    capture = "captures/10MB.pcapng"
+    capture = "captures/10KB.pcapng"
     # Corresponding transferred file
     folder = "DataFiles/"
-    file = "10MB"  
+    file = "10KB"  
     processCapture(capture, file)
 
 main()
