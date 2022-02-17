@@ -1,5 +1,5 @@
 # HTTP Server
--Python comes with a built in http server that we can use to host the files.
+Python comes with a built in http server that we can use to host the files.
 
 Assuming you have clone this repo and are in the HTTP folder, you can start the server via:
 
