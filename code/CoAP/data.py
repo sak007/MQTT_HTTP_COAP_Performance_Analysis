@@ -28,8 +28,12 @@ def stats(data):
     return avg, sd
 
 def main():
-    folder = "wireshark_results/"
-    file = "results_1MB.csv" ##### File to proces ######
+    ######## Set These #########################################
+    file = "results_10MB.csv" # Results file to process
+    ############################################################
+    folder = "wireshark_results/" # Wireshark extracted results folder
+
+    
     fileSize = extractSizeFromName(file)
     print(fileSize)
     tBytes, bBytes, hBytes, runtimes = extractResults(folder + file)

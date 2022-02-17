@@ -28,10 +28,20 @@ All required tests will and provide the following results:
 3) Average file transfer rate and standard deviation at at code/CoAP/Report/processed_stats.csv
 
 # Wireshark
-We use wireshark to capture packet data and process the results to get the total application data transferred for the
-various tests.
+-We use wireshark to capture the packets while we run the client and server code using the capture filter: "host xx.xx.xx.xx", where xx.xx.xx.xx is replaced by the server ip address.
+-1 capture session must correspond to 1 file. Ex: Run 10000 100B file, not 10000 100 B and 1000 KB together.
+-These results must be saved to the "/coap/captures/" folder
 
-Using wireshark we can determine all of the bytes sent during CoAP requests. Before requesting data via 
-coap_file_transfer_client.py, launch wireshark with a capture filter of "host xx.xx.xx.xx", where xx.xx.xx.xx is 
-replaced by the server ip address. This will limit packet capture to only the packets sent and received by the server.
+# Processing Wireshark
+-Wireshark captures are processed via shark.py
+-Uses the pyshark library
+-Set "capture" in main() to the name of the capture file to process
+-Set "file" in main() to the name of the file you captured (This is only used to name the output results file, simply call it 100B or whatever file you captured, do not give a path) 
+-Output will be written to a csv file in the "/coap/wireshark_results/" folder (make sure this exists before running)
+-Will take minutes to process longer captures, especially for 10MB transfers
 
+# Collecting Results
+-Processing the wireshark captures results in csv files in the "/coap/wireshark_results/" folder
+-To get statistics run data.py
+-Needs numpy and matplotlib
+-Set the "file" in main() to the name of the results file output from shark.py (file name only not path, must be in /coap/wireshark_results/ folder)

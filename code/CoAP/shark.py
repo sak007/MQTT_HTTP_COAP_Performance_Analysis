@@ -67,12 +67,10 @@ def processCapture(capture, file):
                         "," + str(headerLength) + "," + str(times[j]) + ",\n")
 
 def main():
-    # Wireshark capture file
-    #capture = "100test.pcapng"
-    capture = "captures/10MB.pcapng"
-    # Corresponding transferred file
-    folder = "DataFiles/"
-    file = "10MB"  
+    ####### Set These ##############################
+    capture = "captures/10MB.pcapng" # relative capture file path
+    file = "10MB" # name of file used (used to name output file)
+    ################################################
     processCapture(capture, file)
 
 main()
