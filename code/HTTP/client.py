@@ -40,12 +40,16 @@ def client(url):
 
 def main():
     #host = '127.0.0.1' # Local
+    
+    ###### Set These ####################
     host = '192.168.0.110'
-    port = 8000
-
-    file = "10MB"
-    url = "http://" + host + ":" + str(port) + "/" + file
     nTimes = 10
+    file = "10MB"
+    #####################################
+
+    port = 8000
+    url = "http://" + host + ":" + str(port) + "/" + file
+    
 
     resultsFile = "results/results2_" + file + ".csv" 
     with open(resultsFile, "w") as out:

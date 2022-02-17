@@ -19,13 +19,21 @@ There are 3 variables that must be set in the main function:
 3) nTimes = the number of times to perform the requeset - ex 10000 for '100B'
 
 # Wireshark
--We use wireshark to capture
+-We use wireshark to capture the packets while we run the client and server code using the capture filter: "host xx.xx.xx.xx", where xx.xx.xx.xx is replaced by the server ip address.
+-1 capture session must correspond to 1 file. Ex: Run 10000 100B file, not 10000 100 B and 1000 KB together.
+-These results must be saved to the "/http/captures/" folder
 
+# Processing Wireshark
+-Wireshark captures are processed via shark.py
+-Uses the pyshark library
+-Set "capture" in main() to the name of the capture file to process
+-Set "file" in main() to the name of the file you captured (This is only used to name the output results file, simply call it 100B or whatever file you captured, do not give a path) 
+-Output will be written to a csv file in the "/http/wireshark_results/" folder (make sure this exists before running)
+-Will take minutes to process longer captures, especially for 10MB transfers
 
-Set the file and nTimes variables in client.py and run to run the client
-
-Using wireshark we can determine all of the bytes sent during http requests as well as the runtime.
-Before requesting data via client.py, launch wireshark with a capture filter of "host xx.xx.xx.xx", where xx.xx.xx.xx is replaced by the server ip address. This will limit packet capture to only the packets sent and received by the server.
-Once all transfers are complete, save the capture file to the captures folder "captures/" and run shark.py to process the data. This will result in a csv file with the results in "wireshark_results/"
-These results can then be processed to get the mean and sd via data.py.
+# Collecting Results
+-Processing the wireshark captures results in csv files in the "/http/wireshark_results/" folder
+-To get statistics run data.py
+-Needs numpy and matplotlib
+-Set the "file" in main() to the name of the results file output from shark.py (file name only not path, must be in /http/wireshark_results/ folder)
 
