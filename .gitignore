@@ -1,11 +1,6 @@
 # Misc
-*.DS_Store
-code/HTTP/captures/
-code/MQTT/ReceivedFiles
-code/MQTT/Report
-code/CoAP/ReceivedFiles
-code/CoAp/Report
-
+.DS_Store
+/code/HTTP/captures/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -135,3 +130,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+code/MQTT/ReceivedFiles
+code/MQTT/Report
+
+# don't remove this
+.DS_Store
