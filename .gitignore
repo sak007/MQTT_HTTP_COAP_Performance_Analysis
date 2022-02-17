@@ -1,6 +1,9 @@
 # Misc
 .DS_Store
 /code/HTTP/captures/
+/code/CoAP/ReceivedFiles
+/code/CoAp/Report
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
