@@ -22,24 +22,35 @@ def processCapture(capture, file):
     times = [] # runtime from first HTTP message to last
     i = 0
     for packet in cap: # for each packet
-        if state == 0 and packet.highest_layer == "HTTP": # Found first HTTP packet
-            state = 1
-            times.append(float(packet.sniff_timestamp))
-        elif state == 0 and packet.highest_layer == "DATA": # Missed an HTTP requst packet
-            print("pass ", i)
-            continue
-        elif state == 1 and packet.highest_layer == "DATA": # Found last HTTP packet
-                state = 0
-                times[i] = float(packet.sniff_timestamp) - times[i]
-                lengths.append(int(packet.data.tcp_reassembled_length))
-                contents.append(int(packet.http.content_length_header))
-                print(i)
-                i+=1
-        elif state ==1 and packet.highest_layer == "HTTP": # Missed HTTP response packet
-            print("pop ", i)
-            times.pop()
-            state = 1
-            times.append(float(packet.sniff_timestamp))
+        try:
+            if state == 0 and packet.highest_layer == "HTTP": # Found first HTTP packet
+                state = 1
+                times.append(float(packet.sniff_timestamp))
+            elif state == 0 and packet.highest_layer == "DATA": # Missed an HTTP requst packet
+                print("pass ", i)
+                continue
+            elif state == 1 and packet.highest_layer == "DATA": # Found last HTTP packet
+                try: 
+                    state = 0
+                    times[i] = float(packet.sniff_timestamp) - times[i]
+                    lengths.append(int(packet.data.tcp_reassembled_length))
+                    contents.append(int(packet.http.content_length_header))
+                    print(i)
+                    i+=1
+                except Exception:
+                    print("pop2 ", i)
+                    times.pop()
+                    if len(lengths) > len(contents):
+                        lengths.pop()
+                    elif len(lengths) < len(contents):
+                        contents.pop()
+            elif state ==1 and packet.highest_layer == "HTTP": # Missed HTTP response packet
+                print("pop ", i)
+                times.pop()
+                state = 1
+                times.append(float(packet.sniff_timestamp))
+        except Exception:
+            pass
                 
     # Save results 
     print("Message #, total bytes sent, runtime,\n")
@@ -55,8 +66,8 @@ def processCapture(capture, file):
 
 def main():
     ####### Set These ##############################
-    capture = "captures/10MB.pcapng" # relative capture file path
-    file = "10MB" # name of file used (used to name output file)
+    capture = "captures/100B.pcapng" # relative capture file path
+    file = "100B" # name of file used (used to name output file)
     ################################################
     processCapture(capture, file)
 
