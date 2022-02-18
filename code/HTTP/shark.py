@@ -1,8 +1,6 @@
 import pyshark
 import os 
 
-SERVER = "192.168.0.110"
-CLIENT = "192.168.0.229"
 
 def getSourceIP(packet):
     return packet.ip.addr
