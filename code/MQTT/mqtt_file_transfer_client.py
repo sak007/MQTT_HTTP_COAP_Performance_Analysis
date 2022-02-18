@@ -30,7 +30,7 @@ class Client:
         self.client = None
         self.time_offset = 0
 
-    # Referenced code from Google example found at: 
+    # Referenced code from Google example found at:
     # https://www.programcreek.com/python/example/91316/ntplib.NTPClient
     def SyncClockToNtp(self, retries, server):
         """Syncs the hardware clock to an NTP server."""
@@ -89,6 +89,11 @@ class Client:
 
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
+        # if msg.topic.split("/")[0] == 'Report':
+        #     fout=open(msg.topic,"wb")
+        #     fout.write(msg.payload)
+        #     fout.close()
+        #     return
         payload_length = len(msg.payload)
 
         # Fixed Header
@@ -116,7 +121,8 @@ class Client:
         print("Received File Copy (%d of %d)" %(self.count - client.num_times_to_loop, self.count))
 
     def publish_data(self, payload):
-        fo_stats.write(str(time.time()+self.time_offset)+",\n")
+        if self.file.split("/")[0] != 'Report':
+            fo_stats.write(str(time.time()+self.time_offset)+",\n")
         self.client.publish_is_complete_flag = False
         self.client.publish(self.topic, payload, self.qos)
 
@@ -180,6 +186,24 @@ class Client:
                 fout.close()
             continue
 
+    def subscribe_report(self, file):
+        # self.client = self.connect(self.bkr_addr, self.bkr_port, self.count, "subscriber")
+        self.file = file
+        self.client.subscribe(file, 2)
+        while not self.client.is_subscribed_flag:
+            continue
+
+
+    def publish_report(self, file):
+        self.file = file
+        try:
+            with open(self.file,"rb") as f:
+                file_size = os.path.getsize(self.file)
+                f.seek(0)
+                self.publish_data(f.read(file_size))
+        except FileNotFoundError:
+            print("Cannot open file: " + self.file)
+            sys.exit()
 
 if __name__ == "__main__":
 
