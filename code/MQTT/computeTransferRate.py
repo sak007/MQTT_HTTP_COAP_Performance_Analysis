@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     for f in SOURCE_FILES:
         sz = os.path.getsize(SRC_FILE_PATH + f)
-        file_size[f] = sz
+        file_size[f] = sz/128
 
 
     for i in (1,2):
@@ -32,13 +32,13 @@ if __name__ == "__main__":
             with open(file_name) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 for row in csv_reader:
-                    start_time.append(float(row[0])/1000000)
+                    start_time.append(float(row[0]))
 
             file_name = file('subscriber', s, i)
             with open(file_name) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 for row in csv_reader:
-                    end_time.append(float(row[0])/1000000)
+                    end_time.append(float(row[0]))
 
             for st,et in zip(start_time, end_time):
                 # print(et - st)

@@ -6,7 +6,7 @@ import time
 
 SRC_FILE_PATH = '../../DataFiles/'
 DEST_FILE_PATH = 'ReceivedFiles/'
-SOURCE_FILES = {'100B': 0, '10KB': 10, '1MB': 0, '10MB': 0}
+SOURCE_FILES = {'100B': 10000, '10KB': 1000, '1MB': 100, '10MB': 10}
 TOPICS = {'100B': 'data/files/100B', '10KB': 'data/files/10KB', '1MB': 'data/files/01MB', '10MB': 'data/files/10MB'}
 RTOPICS = {'100B': 'report/files/100B', '10KB': 'report/files/10KB', '1MB': 'report/files/01MB', '10MB': 'report/files/10MB'}
 
@@ -28,7 +28,7 @@ def mqtt_pub(qos):
         if SOURCE_FILES[f] == 0:
             continue
         print ("Sending " + f + ". Starting in 30 seconds.")
-        time.sleep(10)
+        time.sleep(30)
         client.publish(SRC_FILE_PATH + f, TOPICS[f], qos, SOURCE_FILES[f])
     client.disconnect()
 
@@ -51,10 +51,10 @@ def send_results():
     client.connect()
     for i in (1,2):
         for f in SOURCE_FILES.keys():
+            time.sleep(30)
             file = 'Report/' + f + '_subscriber_qos_' + str(i) + '_stats.csv'
             print ("Sending " + file + ". Starting in 30 seconds.")
-            client.publish(file, file, 2, 1)
-            time.sleep(10)
+            client.publish(file, file, 1, 2)
     client.disconnect()
 
 def request_results():
@@ -64,7 +64,7 @@ def request_results():
     for i in (1,2):
         for f in SOURCE_FILES.keys():
             file = 'Report/' + f + '_subscriber_qos_' + str(i) + '_stats.csv'
-            client.subscribe(file, file, 2, 1)
+            client.subscribe(file, file, 1, 2)
     client.disconnect()
 
 

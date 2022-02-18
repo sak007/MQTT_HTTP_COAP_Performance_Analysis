@@ -89,11 +89,11 @@ class Client:
 
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
-        if msg.topic.split("/")[0] == 'Report':
-            fout=open(msg.topic,"wb")
-            fout.write(msg.payload)
-            fout.close()
-            return
+        # if msg.topic.split("/")[0] == 'Report':
+        #     fout=open(msg.topic,"wb")
+        #     fout.write(msg.payload)
+        #     fout.close()
+        #     return
         payload_length = len(msg.payload)
 
         # Fixed Header
