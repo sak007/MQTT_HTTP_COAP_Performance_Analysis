@@ -46,6 +46,28 @@ def send_report():
     client.publish_report()
     client.disconnect()
 
+def send_results():
+    client = Client(BROKER_ADDR, BROKER_PORT, 'publisher')
+    client.connect()
+    for i in (1,2):
+        for f in SOURCE_FILES.keys():
+            file = 'Report/' + f + '_subscriber_qos_' + str(i) + '_stats.csv'
+            print ("Sending " + file + ". Starting in 30 seconds.")
+            client.publish(file, file, 2, 1)
+            time.sleep(10)
+    client.disconnect()
+
+def request_results():
+    client = Client(BROKER_ADDR, BROKER_PORT, 'subscriber')
+    client.connect()
+    os.makedirs(os.path.dirname('ReceivedFiles/'), exist_ok=True)
+    for i in (1,2):
+        for f in SOURCE_FILES.keys():
+            file = 'Report/' + f + '_subscriber_qos_' + str(i) + '_stats.csv'
+            client.subscribe(file, file, 2, 1)
+    client.disconnect()
+
+
 def init():
     f = open('../../properties.json')
     properties = json.load(f)
@@ -63,8 +85,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.subscriber:
-        mqtt_sub(1);
-        mqtt_sub(2);
+        # mqtt_sub(1)
+        # mqtt_sub(2)
+        send_results()
     elif args.publisher:
-        mqtt_pub(1);
-        mqtt_pub(2);
+        # mqtt_pub(1)
+        # mqtt_pub(2)
+        request_results()
