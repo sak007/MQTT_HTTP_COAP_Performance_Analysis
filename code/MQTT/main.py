@@ -85,10 +85,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.subscriber:
-        # mqtt_sub(1)
-        # mqtt_sub(2)
+        mqtt_sub(1)
+        mqtt_sub(2)
         send_results()
     elif args.publisher:
-        # mqtt_pub(1)
-        # mqtt_pub(2)
+        mqtt_pub(1)
+        mqtt_pub(2)
         request_results()
