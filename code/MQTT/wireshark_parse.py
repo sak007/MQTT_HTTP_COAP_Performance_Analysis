@@ -1,17 +1,5 @@
-#ip.addr == 192.168.7.193 and tcp.port == 1883
+import os
 import pyshark
-
-#capture = pyshark.LiveCapture(interface='en0', bpf_filter="ip.addr == 192.168.7.193 and tcp.port == 1883")
-
-# Example code from stack overflow: https://stackoverflow.com/questions/57099396/continuously-capture-packets-in-pyshark
-
-#for packet in capture.sniff_continuously():
-#    print('Just arrived:', packet)
-
-import pyshark
-
-SERVER = "192.168.7.193"
-CLIENT = "192.168.7.246"
 
 def getSourceIP(packet):
     return packet.ip.addr
@@ -23,9 +11,16 @@ def isMQTTLayer(packet):
 def isMQTTPublish(packet):
     return packet.mqtt.msgtype == "3" or packet.mqtt.msgtype == "6"
 
+def isFromPublisher(packet):
+    return packet.ip.addr == '192.168.1.119'
+
 def calcMQTTMsgLength(packet):
     # Fixed Header
-    return packet.data.tcp_reassembled_length
+    # print(packet)
+    # print(packet.tcp.len)
+    if hasattr(packet, 'data'):
+        return int(packet.data.tcp_reassembled_length)
+    return int(packet.tcp.len)
 
 # Last message sent in HTTP by server
 def isDataLayer(packet):
@@ -42,40 +37,35 @@ def processCapture(capture, file):
     lengths = []
     dataLengths = []
     i = 0
+    file_size = {
+        'data/files/100B': os.path.getsize('../../DataFiles/100B'),
+        'data/files/10KB': os.path.getsize('../../DataFiles/10KB'),
+        'data/files/01MB': os.path.getsize('../../DataFiles/1MB'),
+        'data/files/10MB': os.path.getsize('../../DataFiles/10MB')
+        }
+
     length = 0
-    mqtt_summary = {}
+    packets_list = []
+    topic = ''
     for packet in cap:
         if isMQTTLayer(packet):
-            if isMQTTPublish(packet):
-                print("MID:" + packet.mqtt.msgid + " Topic: " + packet.mqtt.topic + ", QOS: " + packet.mqtt.qos + " Length: " + str(calcMQTTMsgLength(packet)))
-                if packet.mqtt.qos not in mqtt_summary.keys():
-                    mqtt_summary[packet.mqtt.qos] = {}
-                if packet.mqtt.topic not in mqtt_summary[packet.mqtt.qos].keys():
-                    mqtt_summary[packet.mqtt.qos][packet.mqtt.topic] = {}
-                    mqtt_summary[packet.mqtt.qos][packet.mqtt.topic]["count"] = 0
-                    mqtt_summary[packet.mqtt.qos][packet.mqtt.topic]["total_length"] = 0
+            if isMQTTPublish(packet) and isFromPublisher(packet):
+                if packet.mqtt.msgtype == '3':
+                    if length != 0:
+                        x = (topic + ',' + str(length))
+                        print(x)
+                        packets_list.append(x)
+                    topic = packet.mqtt.topic + '_QOS_' + packet.mqtt.qos
+                    length = 0
+                length += calcMQTTMsgLength(packet)
 
-                mqtt_summary[packet.mqtt.qos][packet.mqtt.topic]["count"] += 1
-                mqtt_summary[packet.mqtt.qos][packet.mqtt.topic]["total_length"] += calcMQTTMsgLength(packet)
-
+                
+    if length != 0:
+        packets_list.append(topic + ',' + str(length))
+    mqtt_summary = set(packets_list)
     print(mqtt_summary)
 
-#                print(vars(packet.mqtt))
-        #            print(packet.mqtt.msgtype)
-            #print(vars(packet.mqtt))
-            #quit()
-            #print("Topic: "+packet.mqtt.topic_len)
-            #i=i+1
-#    print("Message #, # packets sent, total bytes sent, data bytes sent, header bytes sent")
-
-#    resultsFile = "wireshark/results_" + file + ".csv"
-#    with open(resultsFile, "w") as f:
-#        f.write("# packets,total bytes,data bytes,header bytes\n")
-#        for j in range(i):
-#            headerLength = lengths[j] - dataLengths[j]
-#            print(j, counts[j], lengths[j], dataLengths[j], headerLength)
-#            f.write(str(counts[j]) + "," + str(lengths[j]) + "," + str(dataLengths[j]) +
-#                        "," + str(headerLength) + ",\n")
+    
 
 def main():
     capture = "Report/wireshark.pcapng"
