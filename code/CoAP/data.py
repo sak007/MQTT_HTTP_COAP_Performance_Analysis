@@ -49,7 +49,7 @@ def main():
         overhead.append(tBytes[i] / bBytes[i] )
 
     rAvg, rSd = stats(runtimes)
-    print("runtime avg: ", rAvg, " sd ", rSd)
+    #print("runtime avg: ", rAvg, " sd ", rSd)
     tAvg, tSd = stats(tRate)
     oAvg, oSd = stats(overhead)
 
