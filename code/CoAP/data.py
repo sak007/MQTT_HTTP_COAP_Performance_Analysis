@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import aiocoap
+import os
 
 def extractSizeFromName(filename):
     file = filename[8:-4]
@@ -32,6 +33,9 @@ def main():
     file = "results_10MB.csv" # Results file to process
     ############################################################
     folder = "wireshark_results/" # Wireshark extracted results folder
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+    
 
     
     fileSize = extractSizeFromName(file)
@@ -41,7 +45,7 @@ def main():
     tRate = [] # transfer rate kilobytes / s
     overhead = [] # file bytes / total bytes sent
     for i in range(len(tBytes)):
-        tRate.append((bBytes[i] / 1024) / runtimes[i])
+        tRate.append((8 * bBytes[i] / 1024) / runtimes[i])
         overhead.append(tBytes[i] / bBytes[i] )
 
     rAvg, rSd = stats(runtimes)

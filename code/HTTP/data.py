@@ -39,7 +39,7 @@ def main():
     tRate = [] # transfer rate kilobytes / s
     overhead = [] # file bytes / total bytes sent
     for i in range(len(tBytes)):
-        tRate.append((bBytes[i] / 1024) / runtimes[i])
+        tRate.append((8*bBytes[i] / 1024) / runtimes[i])
         overhead.append(tBytes[i] / bBytes[i] )
 
     rAvg, rSd = stats(runtimes)

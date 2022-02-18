@@ -1,5 +1,6 @@
 import time
 import requests
+import os
 
 
 def bytesInHeader(header):
@@ -50,7 +51,8 @@ def main():
     port = 8000
     url = "http://" + host + ":" + str(port) + "/" + file
     
-
+    if not os.path.exists("results/"):
+        os.mkdir("results/")
     resultsFile = "results/results2_" + file + ".csv" 
     with open(resultsFile, "w") as out:
         out.write("runtime,header bytes, body bytes\n")

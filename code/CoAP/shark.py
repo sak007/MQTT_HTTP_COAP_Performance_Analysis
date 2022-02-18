@@ -56,6 +56,8 @@ def processCapture(capture, file):
                 
     
     # Save results 
+    if not os.path.exists("wireshark_results"):
+        os.mkdir("wireshark_results")
     print("Message #, total bytes sent, runtime,\n")
     resultsFile = "wireshark_results/results_" + file + ".csv" 
     with open(resultsFile, "w") as f:
