@@ -21,24 +21,11 @@ def isMQTTLayer(packet):
     return packet.highest_layer == "MQTT"
 
 def isMQTTPublish(packet):
-    return packet.mqtt.msgtype == "3"
+    return packet.mqtt.msgtype == "3" or packet.mqtt.msgtype == "6"
 
 def calcMQTTMsgLength(packet):
     # Fixed Header
-    fixed_header_size = 1 # Header Control Byte
-    message_length = int(packet.mqtt.len) # Message Length
-
-    if message_length < 2 ** 7:
-        fixed_header_size += 1 # Message Length < 128: 1 byte
-    elif message_length < 2 ** 14:
-        fixed_header_size += 2 # Message Length >= 128 < 16383: 2 bytes
-    elif message_length < 2 ** 21:
-        fixed_header_size += 3 # Message Length >= 16384 < 2097151: 3 bytes
-    else:
-        fixed_header_size += 4 # Message Length >= 2097151 < 268435455: 4 bytes
-
-    return fixed_header_size + message_length
-
+    return packet.data.tcp_reassembled_length
 
 # Last message sent in HTTP by server
 def isDataLayer(packet):
@@ -49,7 +36,6 @@ def getNumContentBytes(packet):
     return int(packet.mqtt.content_length)
 
 def processCapture(capture, file):
-    
     cap = pyshark.FileCapture(capture)
     state = 0
     counts = []
@@ -81,18 +67,18 @@ def processCapture(capture, file):
             #print("Topic: "+packet.mqtt.topic_len)
             #i=i+1
 #    print("Message #, # packets sent, total bytes sent, data bytes sent, header bytes sent")
-    
-#    resultsFile = "wireshark/results_" + file + ".csv" 
+
+#    resultsFile = "wireshark/results_" + file + ".csv"
 #    with open(resultsFile, "w") as f:
 #        f.write("# packets,total bytes,data bytes,header bytes\n")
 #        for j in range(i):
 #            headerLength = lengths[j] - dataLengths[j]
 #            print(j, counts[j], lengths[j], dataLengths[j], headerLength)
-#            f.write(str(counts[j]) + "," + str(lengths[j]) + "," + str(dataLengths[j]) + 
+#            f.write(str(counts[j]) + "," + str(lengths[j]) + "," + str(dataLengths[j]) +
 #                        "," + str(headerLength) + ",\n")
 
 def main():
-    capture = "Report/wireshark_capture.pcapng"
+    capture = "Report/wireshark.pcapng"
     file = "wireshark_capture_processed.csv"
     processCapture(capture, file)
 
