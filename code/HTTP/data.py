@@ -28,7 +28,7 @@ def stats(data):
 
 def main():
     ######## Set These #########################################
-    file = "results_10MB.csv" # Results file to process
+    file = "results_100B.csv" # Results file to process
     ############################################################
     folder = "wireshark_results/" # Wireshark extracted results folder
 
@@ -43,7 +43,7 @@ def main():
         overhead.append(tBytes[i] / bBytes[i] )
 
     rAvg, rSd = stats(runtimes)
-    print("runtime avg: ", rAvg, " sd ", rSd)
+    #print("runtime avg: ", rAvg, " sd ", rSd)
     tAvg, tSd = stats(tRate)
     oAvg, oSd = stats(overhead)
 
