@@ -7,12 +7,13 @@
  - [CoAP](#coap)
 
 ## MQTT QoS 1
-
+See readme file located in code\MQTT\README.md
 
 ## MQTT QoS 2
-
+See readme file located in code\MQTT\README.md
 
 ## HTTP
-
+See readme file located in code\HTTP\README.md
 
 ## CoAP
+See readme file located in code\CoAP\README.md
