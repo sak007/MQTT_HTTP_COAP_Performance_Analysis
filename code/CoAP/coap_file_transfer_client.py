@@ -24,6 +24,8 @@ class Client:
             transfer_start_time_ms = time.time_ns() / 1_000_000 # Record transfer start time in ms
 
             num_times_to_loop -= 1
+
+            # Get requested file using parameter name to sepecify the file
             request = Message(code=GET, uri='coap://' + self.server_addr + ':' + str(self.server_port) + '/file?name='+file_name)
             try:
                 response = await protocol.request(request).response

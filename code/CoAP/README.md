@@ -22,7 +22,7 @@ client via:
 
 python3 coap_fie_transfer_client.py
 
-All required tests will and provide the following results:
+All required tests run will and provide the following results:
 1) Per file transfer results and summaries to the terminal window
 2) Received files will be located at code/CoAP/ReceivedFiles/
 3) Average file transfer rate and standard deviation at at code/CoAP/Report/processed_stats.csv
